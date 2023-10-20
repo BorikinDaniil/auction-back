@@ -1,4 +1,12 @@
-import { Controller, Body, Res, Post } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Res,
+  Post,
+  UsePipes,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 import { PasswordService } from '../password/password.service';
@@ -6,6 +14,7 @@ import { UserService } from '../user/user.service';
 import { ValidationService } from '../validation/validation.service';
 import { RegistrationDto } from './dtos/registration.dto';
 import { AuthService } from '../auth/auth.service';
+import { ValidationPipe } from '../pipes/validation.pipes';
 
 @Controller('registration')
 export class RegistrationController {
@@ -16,6 +25,7 @@ export class RegistrationController {
     private readonly authService: AuthService,
   ) {}
 
+  @UsePipes(ValidationPipe)
   @Post()
   async register(
     @Body() registrationDto: RegistrationDto,
@@ -32,16 +42,23 @@ export class RegistrationController {
     );
 
     console.log('errors', errors);
-    console.log('errors.length', errors.length);
 
-    if (errors.length) {
-      return res.status(400).json({
-        status: 'error',
-        message:
-          'Password need to have 8 or more characters with a mix of letters numbers and symbols',
-        field: 'password',
-      });
-    }
+    throw new HttpException(
+      {
+        errors: errors,
+      },
+      HttpStatus.BAD_REQUEST,
+    );
+
+    // if (errors.length) {
+    //   return res.status(400).json({
+    //     status: 'error',
+    //     message:
+    //       'Password need to have 8 or more characters with a mix of letters numbers and symbols',
+    //     field: 'password',
+    //     errors,
+    //   });
+    // }
 
     delete registrationDto.passwordConfirm;
 

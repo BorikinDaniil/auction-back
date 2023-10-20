@@ -6,11 +6,15 @@ export class RegistrationDto {
   @IsString()
   username: string;
 
-  @Matches(EMAIL_REGEXP, { always: true })
+  @Matches(EMAIL_REGEXP, { always: true, message: 'Invalid email' })
   email: string;
 
   @Length(10, 30)
-  @Matches(PASSWORD_REGEXP, { always: true })
+  @Matches(PASSWORD_REGEXP, {
+    always: true,
+    message:
+      'Password must be between 6 and 64 characters long with 1 special character and capital character each',
+  })
   password: string;
 
   @IsNumber()
