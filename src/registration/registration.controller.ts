@@ -15,7 +15,10 @@ import { ValidationService } from '../validation/validation.service';
 import { RegistrationDto } from './dtos/registration.dto';
 import { AuthService } from '../auth/auth.service';
 import { ValidationPipe } from '../pipes/validation.pipes';
+import { ValidationError } from 'class-validator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('registration')
 export class RegistrationController {
   constructor(
@@ -31,34 +34,24 @@ export class RegistrationController {
     @Body() registrationDto: RegistrationDto,
     @Res() res: Response,
   ) {
-    const email = registrationDto.email.toLowerCase();
+    const email: string = registrationDto.email.toLowerCase();
 
     let isEmailTaken = false;
     let isUserNameTaken = false;
 
-    const errors = await this.validationService.validate(
+    const errors: ValidationError[] = await this.validationService.validate(
       RegistrationDto,
       registrationDto,
     );
 
-    console.log('errors', errors);
-
-    throw new HttpException(
-      {
-        errors: errors,
-      },
-      HttpStatus.BAD_REQUEST,
-    );
-
-    // if (errors.length) {
-    //   return res.status(400).json({
-    //     status: 'error',
-    //     message:
-    //       'Password need to have 8 or more characters with a mix of letters numbers and symbols',
-    //     field: 'password',
-    //     errors,
-    //   });
-    // }
+    if (errors && errors.length) {
+      throw new HttpException(
+        {
+          errors: errors,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     delete registrationDto.passwordConfirm;
 
