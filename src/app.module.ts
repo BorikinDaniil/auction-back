@@ -10,7 +10,6 @@ import { LoginModule } from './login/login.module';
 import { PasswordModule } from './password/password.module';
 import { RegistrationModule } from './registration/registration.module';
 import { UserModule } from './user/user.module';
-import { ValidationModule } from './validation/validation.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 const {
@@ -54,7 +53,6 @@ const {
     PasswordModule,
     RegistrationModule,
     UserModule,
-    ValidationModule,
   ],
   controllers: [AppController],
 })

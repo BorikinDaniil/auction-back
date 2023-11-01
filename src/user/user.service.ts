@@ -19,7 +19,7 @@ export class UserService {
     return await this.user.save(entity);
   }
 
-  findOne(where): Promise<User> {
+  async findOne(where: object): Promise<User> {
     return this.user.findOne({
       where: {
         ...where,

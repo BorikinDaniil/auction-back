@@ -3,16 +3,15 @@ import { Response } from 'express';
 
 import { PasswordService } from '../password/password.service';
 import { UserService } from '../user/user.service';
-import { ValidationService } from '../validation/validation.service';
 import { LoginDto } from './dtos/login.dto';
 import { AuthService } from '../auth/auth.service';
+import userModel from '../common/utils/models/EntityModels';
 
 @Controller('login')
 export class LoginController {
   constructor(
     private readonly passwordService: PasswordService,
     private readonly userService: UserService,
-    private readonly validationService: ValidationService,
     private readonly authService: AuthService,
   ) {}
 
@@ -20,16 +19,6 @@ export class LoginController {
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const email = loginDto.email.toLowerCase();
     const password = loginDto.password;
-    const errors = await this.validationService.validate(LoginDto, {
-      email,
-      password,
-    });
-
-    if (errors.length) {
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'Wrong email or password', errors });
-    }
 
     const user = await this.userService.findOne({ email });
 
@@ -37,7 +26,7 @@ export class LoginController {
       return res.status(400).json({
         status: 'error',
         field: 'email',
-        message: 'No user with such email',
+        errors: { email: 'No user with such email' },
       });
     }
 
@@ -47,7 +36,7 @@ export class LoginController {
       return res.status(400).json({
         status: 'error',
         field: 'password',
-        message: 'Wrong password',
+        errors: { password: 'Wrong password' },
       });
     }
 
@@ -58,7 +47,7 @@ export class LoginController {
     return res.status(200).json({
       status: 'success',
       token,
-      user,
+      user: userModel(user),
     });
   }
 }

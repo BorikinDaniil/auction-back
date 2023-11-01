@@ -1,5 +1,6 @@
 import { Controller, Get, Res, UseGuards, Req } from '@nestjs/common';
 import { Response, Request } from 'express';
+import userModel from '../common/utils/models/EntityModels';
 
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.quard';
@@ -25,12 +26,8 @@ export class UserController {
   @Get('/me')
   async getUserByToken(@Req() req: Request, @Res() res: Response) {
     const id = await this.userService.getUserIdByToken(req);
-    const {
-      username,
-      email,
-      id: userId,
-    } = await this.userService.findOne({ id });
+    const user = await this.userService.findOne({ id });
 
-    return res.status(200).json({ username, email, id: userId });
+    return res.status(200).json(userModel(user));
   }
 }
