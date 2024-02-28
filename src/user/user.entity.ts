@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Auction } from '../auctions/auction.entity';
 
 @Entity()
 export class User {
@@ -33,4 +35,7 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: string;
+
+  @OneToMany(() => Auction, (Auction) => Auction.owner)
+  auctions: Auction[];
 }
