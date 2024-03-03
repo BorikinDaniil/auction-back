@@ -6,7 +6,9 @@ import { UserService } from '../user/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { AuthService } from '../auth/auth.service';
 import userModel from '../common/utils/models/EntityModels';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('login')
 export class LoginController {
   constructor(

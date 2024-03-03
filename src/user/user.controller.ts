@@ -4,14 +4,12 @@ import userModel from '../common/utils/models/EntityModels';
 
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.quard';
-import { JwtService } from '@nestjs/jwt';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()

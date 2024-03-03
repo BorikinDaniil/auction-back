@@ -18,7 +18,9 @@ import { AuctionDto } from './dtos/auction.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../files/files.service';
 import { Files } from '../types/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auctions')
 @Controller('auctions')
 export class AuctionController {
   constructor(
