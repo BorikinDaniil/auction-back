@@ -12,6 +12,7 @@ import { RegistrationModule } from './registration/registration.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuctionModule } from './auctions/auction.module';
+import { ProfilesModule } from './profiles/profiles.module';
 
 const {
   TYPEORM_CONNECTION,
@@ -55,6 +56,7 @@ const {
     RegistrationModule,
     UserModule,
     AuctionModule,
+    ProfilesModule,
   ],
   controllers: [AppController],
 })

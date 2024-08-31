@@ -5,6 +5,7 @@ import { Request } from 'express';
 
 import { Auction } from './auction.entity';
 import { UserService } from '../user/user.service';
+import { AuctionPayload } from '../types/common';
 
 @Injectable()
 export class AuctionService {
@@ -14,12 +15,14 @@ export class AuctionService {
     private readonly userService: UserService,
   ) {}
 
-  async create(req: Request, data: object): Promise<any> {
-    const userId = await this.userService.getUserIdByToken(req);
-    return await this.auction.save({
+  async create(req: Request, data: AuctionPayload): Promise<Auction> {
+    const user = await this.userService.getUserByToken(req);
+    const entity = this.auction.create({
       ...data,
-      owner: userId,
+      owner: user,
     });
+
+    return await this.auction.save(entity);
   }
 
   findOne(where): Promise<Auction> {

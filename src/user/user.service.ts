@@ -5,6 +5,8 @@ import { Request } from 'express';
 
 import { User } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { LoginDto } from '../login/dtos/login.dto';
+import { Profile } from '../profiles/profile.entity';
 
 @Injectable()
 export class UserService {
@@ -14,8 +16,8 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(data?): Promise<any> {
-    const entity = await this.user.create(data || {});
+  async create(data: LoginDto, profile: Profile): Promise<User> {
+    const entity: User = this.user.create({ ...data, profile });
     return await this.user.save(entity);
   }
 
@@ -28,18 +30,21 @@ export class UserService {
     });
   }
 
-  findByEmailOrName(email: string, username: string): Promise<User> {
+  async findByEmail(email: string): Promise<User> {
     return this.user
       .createQueryBuilder('user')
       .where('user.email = :email', { email })
-      .orWhere('user.username = :username', { username })
       .andWhere('user.isDeleted = :isDeleted', { isDeleted: false })
       .getOne();
   }
 
-  async getUserIdByToken(req: Request) {
+  async getUserByToken(req: Request): Promise<User> {
     const token: string = req.headers.authorization.split(' ')[1];
-    const { id } = this.jwtService.verify(token);
+    return this.jwtService.verify(token);
+  }
+
+  async getUserIdByToken(req: Request): Promise<string> {
+    const { id } = await this.getUserByToken(req);
     return id;
   }
 }

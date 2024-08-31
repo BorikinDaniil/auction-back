@@ -36,7 +36,7 @@ export class AuctionController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async getAuctionById(@Param('id') id: number, @Res() res: Response) {
+  async getAuctionById(@Param('id') id: string, @Res() res: Response) {
     return res.status(200).json(await this.auctionService.findOne({ id }));
   }
 

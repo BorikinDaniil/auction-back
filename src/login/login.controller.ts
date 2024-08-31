@@ -5,7 +5,6 @@ import { PasswordService } from '../password/password.service';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { AuthService } from '../auth/auth.service';
-import userModel from '../common/utils/models/EntityModels';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -27,7 +26,6 @@ export class LoginController {
     if (!user) {
       return res.status(400).json({
         status: 'error',
-        field: 'email',
         errors: { email: 'No user with such email' },
       });
     }
@@ -37,7 +35,6 @@ export class LoginController {
     if (!result) {
       return res.status(400).json({
         status: 'error',
-        field: 'password',
         errors: { password: 'Wrong password' },
       });
     }
@@ -49,7 +46,7 @@ export class LoginController {
     return res.status(200).json({
       status: 'success',
       token,
-      user: userModel(user),
+      user,
     });
   }
 }

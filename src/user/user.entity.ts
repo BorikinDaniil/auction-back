@@ -5,11 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Auction } from '../auctions/auction.entity';
+import { Profile } from '../profiles/profile.entity';
 
-@Entity()
+@Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -18,14 +21,8 @@ export class User {
   email: string;
 
   @Exclude()
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', select: false })
   password: string;
-
-  @Column({ type: 'varchar' })
-  username: string;
-
-  @Column({ type: 'integer' })
-  gender: string;
 
   @Column({ type: 'bool', default: false })
   isDeleted: boolean;
@@ -36,6 +33,10 @@ export class User {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: string;
 
-  @OneToMany(() => Auction, (Auction) => Auction.owner)
+  @OneToMany(() => Auction, (auction) => auction.owner)
   auctions: Auction[];
+
+  @OneToOne(() => Profile, (profile) => profile.owner)
+  @JoinColumn()
+  profile: Profile;
 }

@@ -9,7 +9,7 @@ import {
 import { User } from '../user/user.entity';
 import { IsNumber, IsString } from 'class-validator';
 
-@Entity()
+@Entity({ name: 'auctions' })
 export class Auction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -57,6 +57,6 @@ export class Auction {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: string;
 
-  @ManyToOne(() => User, (User) => User.auctions)
+  @ManyToOne(() => User, (user) => user.auctions)
   owner: User;
 }
