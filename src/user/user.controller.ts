@@ -4,6 +4,7 @@ import { Response, Request } from 'express';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.quard';
 import { ApiTags } from '@nestjs/swagger';
+import { getResponse } from '../common/utils/response';
 
 @ApiTags('User')
 @Controller('user')
@@ -17,7 +18,7 @@ export class UserController {
     const reqUser: any = req['user'];
     const user = await this.userService.findOne({ id: reqUser.id });
 
-    return res.status(200).json(user);
+    return getResponse(res, 200, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -26,6 +27,6 @@ export class UserController {
     const id = await this.userService.getUserIdByToken(req);
     const user = await this.userService.findOne({ id });
 
-    return res.status(200).json(user);
+    return getResponse(res, 200, user);
   }
 }

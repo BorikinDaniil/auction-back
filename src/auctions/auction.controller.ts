@@ -19,6 +19,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../files/files.service';
 import { Files } from '../types/common';
 import { ApiTags } from '@nestjs/swagger';
+import { getResponse } from '../common/utils/response';
 
 @ApiTags('Auctions')
 @Controller('auctions')
@@ -37,7 +38,9 @@ export class AuctionController {
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async getAuctionById(@Param('id') id: string, @Res() res: Response) {
-    return res.status(200).json(await this.auctionService.findOne({ id }));
+    const auction = await this.auctionService.findOne({ id });
+
+    return getResponse(res, 200, auction);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -60,9 +63,8 @@ export class AuctionController {
       video: videoName,
     });
 
-    return res.status(200).json({
-      status: 'success',
-      message: 'Auction created',
-    });
+    const resData = { message: 'Auction created' };
+
+    return getResponse(res, 200, resData);
   }
 }

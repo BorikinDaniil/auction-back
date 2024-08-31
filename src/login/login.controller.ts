@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { AuthService } from '../auth/auth.service';
 import { ApiTags } from '@nestjs/swagger';
+import { getErrorData, getResponse } from '../common/utils/response';
 
 @ApiTags('Auth')
 @Controller('login')
@@ -24,29 +25,28 @@ export class LoginController {
     const user = await this.userService.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
-        status: 'error',
-        errors: { email: 'No user with such email' },
-      });
+      return getResponse(
+        res,
+        400,
+        getErrorData('email', 'No user with such email'),
+      );
     }
 
     const result = await this.passwordService.compare(password, user.password);
 
     if (!result) {
-      return res.status(400).json({
-        status: 'error',
-        errors: { password: 'Wrong password' },
-      });
+      return getResponse(res, 400, getErrorData('password', 'Wrong password'));
     }
 
     const token = await this.authService.getToken({
       id: user.id,
     });
 
-    return res.status(200).json({
-      status: 'success',
+    const resData = {
       token,
       user,
-    });
+    };
+
+    getResponse(res, 400, resData);
   }
 }

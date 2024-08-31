@@ -1,13 +1,18 @@
-import { Controller, Get, Param, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { Response } from 'express';
+import { getResponse } from '../common/utils/response';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.quard';
 
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async find(@Param('id') id: string, @Res() res: Response) {
-    return res.status(200).json(await this.profilesService.findOne({ id }));
+    const profile = await this.profilesService.findOne({ id });
+
+    return getResponse(res, 200, profile);
   }
 }

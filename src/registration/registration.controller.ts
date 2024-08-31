@@ -8,6 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { ValidationPipe } from '../pipes/validation.pipes';
 import { ApiTags } from '@nestjs/swagger';
 import { ProfilesService } from '../profiles/profiles.service';
+import { getErrorData, getResponse } from '../common/utils/response';
 
 @ApiTags('Auth')
 @Controller('registration')
@@ -42,12 +43,11 @@ export class RegistrationController {
     if (isEmailTaken || isUserNameTaken) {
       const field = isEmailTaken ? 'email' : 'username';
 
-      return res.status(400).json({
-        errors: {
-          [field]: `This ${field} is already taken`,
-          status: 'error',
-        },
-      });
+      return getResponse(
+        res,
+        400,
+        getErrorData(field, `This ${field} is already taken`),
+      );
     }
 
     const newProfile = await this.profilesService.create({
@@ -65,14 +65,15 @@ export class RegistrationController {
 
     const token = await this.authService.getToken({ id });
 
-    return res.status(200).json({
-      status: 'success',
+    const resData = {
       token,
       user: {
         gender: newProfile.gender,
         username: newProfile.username,
         id,
       },
-    });
+    };
+
+    return getResponse(res, 200, resData);
   }
 }
