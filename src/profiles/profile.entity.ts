@@ -1,18 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
 import { User } from '../user/user.entity';
+import { AbstractEntity } from '../database/abstract.entity';
 
 @Entity({ name: 'profiles' })
-export class Profile {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Profile extends AbstractEntity<Profile> {
   @Column({ type: 'varchar' })
   username: string;
 
@@ -22,12 +13,7 @@ export class Profile {
   @Column({ type: 'bool', default: false })
   isDeleted: boolean;
 
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: string;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: string;
-
   @OneToOne(() => User, (user) => user.profile)
+  @JoinColumn({ name: 'user_id' })
   owner: User;
 }

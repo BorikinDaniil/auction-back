@@ -17,11 +17,11 @@ export class RegistrationDto {
   gender: number;
 
   @ApiProperty({ example: 'Password1@', description: 'User Password' })
-  @Length(10, 30)
+  @Length(6, 64, { message: 'Password must be between 6 and 64 characters long' })
   @Matches(PASSWORD_REGEXP, {
     always: true,
     message:
-      'Password must be between 6 and 64 characters long with 1 special character and capital character each',
+      'Password must contains at least 1 special character and capital character each',
   })
   password: string;
 

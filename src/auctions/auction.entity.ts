@@ -1,19 +1,14 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-} from 'typeorm';
+  ManyToOne, JoinColumn
+} from "typeorm";
 import { User } from '../user/user.entity';
 import { IsNumber, IsString } from 'class-validator';
+import { AbstractEntity } from '../database/abstract.entity';
 
 @Entity({ name: 'auctions' })
-export class Auction {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Auction extends AbstractEntity<Auction> {
   @Column({ type: 'varchar', default: '' })
   @IsString()
   productName: string;
@@ -43,20 +38,12 @@ export class Auction {
   video: string;
 
   @Column({ type: 'bool', default: false })
-  isDeleted: boolean;
-
-  @Column({ type: 'bool', default: false })
   active: boolean;
 
   @Column({ type: 'bool', default: false })
   finished: boolean;
 
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: string;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: string;
-
   @ManyToOne(() => User, (user) => user.auctions)
+  @JoinColumn({ name: 'user_id' })
   owner: User;
 }
