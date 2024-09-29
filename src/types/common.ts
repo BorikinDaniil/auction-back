@@ -9,3 +9,8 @@ export type AuctionPayload = AuctionDto & {
   image: string;
   video: string;
 };
+
+export enum Gender {
+  male = 1,
+  female,
+}

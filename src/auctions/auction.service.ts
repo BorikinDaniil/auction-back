@@ -26,7 +26,6 @@ export class AuctionService {
   }
 
   findOne(where): Promise<Auction> {
-    // TODO send only id and username owner properties
     return this.auction.findOne({
       where: {
         ...where,
@@ -37,7 +36,6 @@ export class AuctionService {
   }
 
   findAll(): Promise<Auction[]> {
-    // TODO send only id and username owner properties
     return this.auction.find({
       where: { isDeleted: false },
       relations: ['owner'],

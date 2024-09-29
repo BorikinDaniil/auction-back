@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import * as path from 'path';
@@ -13,6 +13,10 @@ import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuctionModule } from './auctions/auction.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { CategoriesModule } from './categories/categories.module';
+import { SubCategoriesModule } from './sub-categories/sub-categories.module';
+import { CategoriesService } from './categories/categories.service';
+import { SubCategoriesService } from "./sub-categories/sub-categories.service";
 
 const {
   TYPEORM_CONNECTION,
@@ -57,7 +61,19 @@ const {
     UserModule,
     AuctionModule,
     ProfilesModule,
+    CategoriesModule,
+    SubCategoriesModule,
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(
+    private readonly categoriesService: CategoriesService,
+    private readonly subCategoriesService: SubCategoriesService,
+  ) {}
+
+  async onModuleInit() {
+    await this.categoriesService.createCategories();
+    await this.subCategoriesService.createSubCategories();
+  }
+}
