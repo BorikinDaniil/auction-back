@@ -16,34 +16,12 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SubCategoriesModule } from './sub-categories/sub-categories.module';
 import { CategoriesService } from './categories/categories.service';
-import { SubCategoriesService } from "./sub-categories/sub-categories.service";
-
-const {
-  TYPEORM_CONNECTION,
-  TYPEORM_HOST,
-  TYPEORM_PORT,
-  TYPEORM_USERNAME,
-  TYPEORM_PASSWORD,
-  TYPEORM_DATABASE,
-  TYPEORM_ENTITIES_PATH,
-  TYPEORM_SYNCHRONIZE,
-  TYPEORM_MIGRATIONS,
-} = process.env;
+import { SubCategoriesService } from './sub-categories/sub-categories.service';
+import { dataSourceOptions } from '../db/data-source';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: TYPEORM_CONNECTION as 'postgres',
-      host: TYPEORM_HOST,
-      port: +TYPEORM_PORT,
-      username: TYPEORM_USERNAME,
-      password: TYPEORM_PASSWORD,
-      database: TYPEORM_DATABASE,
-      entities: [path.join(__dirname, TYPEORM_ENTITIES_PATH)],
-      synchronize: TYPEORM_SYNCHRONIZE === 'true' || false,
-      migrations: [TYPEORM_MIGRATIONS],
-      migrationsTableName: 'migrations',
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     JwtModule.registerAsync({
       useFactory: async () => {
         return {
