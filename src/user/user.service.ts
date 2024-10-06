@@ -30,6 +30,18 @@ export class UserService {
     });
   }
 
+  async getUserWithPassword(where: object): Promise<User> {
+    return this.user.findOne({
+      where: {
+        ...where,
+        isDeleted: false,
+      },
+      select: {
+        password: true,
+      },
+    });
+  }
+
   async findByEmail(email: string): Promise<User> {
     return this.user
       .createQueryBuilder('user')

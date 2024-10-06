@@ -52,7 +52,7 @@ export class RegistrationController {
 
     const newProfile = await this.profilesService.create({
       username: registrationDto.username,
-      gender: registrationDto.gender,
+      // gender: registrationDto.gender,
     });
 
     const { id } = await this.userService.create(

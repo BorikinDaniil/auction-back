@@ -22,7 +22,7 @@ export class LoginController {
     const email = loginDto.email.toLowerCase();
     const password = loginDto.password;
 
-    const user = await this.userService.findOne({ email });
+    const user = await this.userService.getUserWithPassword({ email });
 
     if (!user) {
       return getResponse(
@@ -38,15 +38,18 @@ export class LoginController {
       return getResponse(res, 400, getErrorData('password', 'Wrong password'));
     }
 
+    // TODO: Remove second redundant request to db
+    const userData = await this.userService.findOne({ email });
+
     const token = await this.authService.getToken({
-      id: user.id,
+      id: userData.id,
     });
 
     const resData = {
       token,
-      user,
+      user: userData,
     };
 
-    getResponse(res, 400, resData);
+    getResponse(res, 200, resData);
   }
 }

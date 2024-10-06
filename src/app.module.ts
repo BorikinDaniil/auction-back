@@ -17,11 +17,22 @@ import { CategoriesModule } from './categories/categories.module';
 import { SubCategoriesModule } from './sub-categories/sub-categories.module';
 import { CategoriesService } from './categories/categories.service';
 import { SubCategoriesService } from './sub-categories/sub-categories.service';
-import { dataSourceOptions } from '../db/data-source';
+// import { dataSourceOptions } from '../db/data-source';
+import typeorm from './config/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(dataSourceOptions),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [typeorm],
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        configService.get('typeorm'),
+    }),
+    // TypeOrmModule.forRoot(dataSourceOptions),
     JwtModule.registerAsync({
       useFactory: async () => {
         return {

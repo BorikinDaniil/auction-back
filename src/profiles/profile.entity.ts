@@ -8,7 +8,7 @@ export class Profile extends AbstractEntity<Profile> {
   @Column({ type: 'varchar' })
   username: string;
 
-  @Column({ type: 'integer', enum: Gender, nullable: true, default: null })
+  @Column({ type: 'enum', enum: Gender, nullable: true, default: null })
   gender: Gender;
 
   @Column({ type: 'bool', default: false })
