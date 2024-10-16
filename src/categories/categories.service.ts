@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CATEGORIES, Category } from './category.entity';
 import { Repository } from 'typeorm';
+import { CategoriesParams } from '../types/requestsParams';
 
 @Injectable()
 export class CategoriesService {
@@ -10,12 +11,16 @@ export class CategoriesService {
     private readonly categories: Repository<Category>,
   ) {}
 
-  async getCategory(where: object): Promise<Category> {
+  async getAllCategories(where: CategoriesParams = {}): Promise<Category[]> {
+    return await this.categories.find({ where });
+  }
+
+  async getCategory(where: CategoriesParams = {}): Promise<Category> {
     return await this.categories.findOne({ where });
   }
 
   async createCategories() {
-    const categories = await this.categories.find();
+    const categories = await this.getAllCategories();
 
     if (categories.length === 0) {
       const defaultCategories = [];
