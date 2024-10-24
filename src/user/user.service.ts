@@ -55,7 +55,7 @@ export class UserService {
     return this.jwtService.verify(token);
   }
 
-  async getUserIdByToken(req: Request): Promise<string> {
+  async getUserIdByToken(req: Request): Promise<number> {
     const { id } = await this.getUserByToken(req);
     return id;
   }

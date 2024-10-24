@@ -41,5 +41,5 @@ export class AuctionDto {
     description: 'Categories',
   })
   @IsArray()
-  subCategories: string[];
+  subCategories: number[];
 }

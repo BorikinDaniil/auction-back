@@ -7,7 +7,7 @@ import {
 
 export class AbstractEntity<T> {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: string;

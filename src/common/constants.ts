@@ -10,3 +10,7 @@ export const PASSWORD_GENERATOR_SETTINGS = {
   exclude: '}{[]|:;"/.,`',
   strict: true,
 };
+
+export const DEFAULT_AUCTION_PARAMS = { isDeleted: false };
+
+export const DEFAULT_AUCTION_RELATIONS = ['owner'];

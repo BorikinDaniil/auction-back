@@ -17,6 +17,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { SubCategoriesModule } from './sub-categories/sub-categories.module';
 import { CategoriesService } from './categories/categories.service';
 import { SubCategoriesService } from './sub-categories/sub-categories.service';
+import { ScheduleModule } from '@nestjs/schedule';
 // import { dataSourceOptions } from '../db/data-source';
 import typeorm from './config/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -27,6 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
       load: [typeorm],
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) =>
