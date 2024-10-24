@@ -13,10 +13,12 @@ export class User extends AbstractEntity<User> {
   @Column({ type: 'varchar', select: false })
   password: string;
 
-  @OneToMany(() => Auction, (auction) => auction.owner)
+  @OneToMany(() => Auction, (auction) => auction.owner, {
+    onDelete: 'SET NULL',
+  })
   auctions: Auction[];
 
-  @OneToOne(() => Profile, (profile) => profile.owner)
+  @OneToOne(() => Profile, (profile) => profile.owner, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'profileId_id' })
   profile: Profile;
 }

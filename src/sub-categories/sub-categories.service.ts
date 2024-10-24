@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SUB_CATEGORIES, SubCategory } from './sub-category.entity';
 import { Repository } from 'typeorm';
 import { CategoriesService } from '../categories/categories.service';
+import { SubCategoriesParams } from '../types/requestsParams';
 
 @Injectable()
 export class SubCategoriesService {
@@ -12,7 +13,13 @@ export class SubCategoriesService {
     private readonly categories: CategoriesService,
   ) {}
 
-  async createSubCategories() {
+  async getAllSubcategories(
+    where: SubCategoriesParams,
+  ): Promise<SubCategory[]> {
+    return await this.subCategories.find({ where });
+  }
+
+  async createSubCategories(): Promise<void> {
     const subCategories = await this.subCategories.find();
 
     if (subCategories.length === 0) {

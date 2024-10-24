@@ -11,8 +11,11 @@ export class CategoriesService {
     private readonly categories: Repository<Category>,
   ) {}
 
-  async getAllCategories(where: CategoriesParams = {}): Promise<Category[]> {
-    return await this.categories.find({ where });
+  async getAllCategories(
+    where: CategoriesParams = {},
+    relations: Array<string> = [],
+  ): Promise<Category[]> {
+    return await this.categories.find({ where, relations });
   }
 
   async getCategory(where: CategoriesParams = {}): Promise<Category> {

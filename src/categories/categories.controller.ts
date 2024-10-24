@@ -16,7 +16,7 @@ export class CategoriesController {
     return getResponse(
       res,
       200,
-      await this.categoriesService.getAllCategories(),
+      await this.categoriesService.getAllCategories({}, ['subCategories']),
     );
   }
 }

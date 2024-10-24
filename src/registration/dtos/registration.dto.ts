@@ -24,7 +24,7 @@ export class RegistrationDto {
   @Matches(PASSWORD_REGEXP, {
     always: true,
     message:
-      'Password must contains at least 1 special character and capital character each',
+      'Password must contains at least 1 special character, number, and capital character each',
   })
   password: string;
 

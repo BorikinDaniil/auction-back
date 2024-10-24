@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuctionDto {
@@ -35,4 +35,11 @@ export class AuctionDto {
   })
   @IsString()
   endAt: string;
+
+  @ApiProperty({
+    example: '[1, 2]',
+    description: 'Categories',
+  })
+  @IsArray()
+  subCategories: string[];
 }

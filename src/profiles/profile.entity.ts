@@ -14,7 +14,7 @@ export class Profile extends AbstractEntity<Profile> {
   @Column({ type: 'bool', default: false })
   isDeleted: boolean;
 
-  @OneToOne(() => User, (user) => user.profile)
+  @OneToOne(() => User, (user) => user.profile, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   owner: User;
 }
