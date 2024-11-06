@@ -12,5 +12,12 @@ export const PASSWORD_GENERATOR_SETTINGS = {
 };
 
 export const DEFAULT_AUCTION_PARAMS = { isDeleted: false };
-
-export const DEFAULT_AUCTION_RELATIONS = ['owner'];
+export const DEFAULT_AUCTION_RELATIONS = ['owner', 'owner.profile'];
+export const DEFAULT_AUCTION_SELECTION = {
+  owner: {
+    id: true,
+    profile: {
+      username: true,
+    },
+  },
+};

@@ -10,6 +10,7 @@ import { User } from '../user/user.entity';
 import { IsNumber, IsString } from 'class-validator';
 import { AbstractEntity } from '../database/abstract.entity';
 import { SubCategory } from '../sub-categories/sub-category.entity';
+import { AuctionStatus } from '../types/common';
 
 @Entity({ name: 'auctions' })
 export class Auction extends AbstractEntity<Auction> {
@@ -41,19 +42,15 @@ export class Auction extends AbstractEntity<Auction> {
   @Column({ type: 'varchar', default: null, nullable: true })
   video: string;
 
-  @Column({ type: 'bool', default: false })
-  active: boolean;
-
-  @Column({ type: 'bool', default: false })
-  finished: boolean;
+  @Column({ type: 'integer', default: AuctionStatus.awaiting })
+  status: AuctionStatus;
 
   @ManyToOne(() => User, (user) => user.auctions, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   owner: User;
 
-  @ManyToMany(() => SubCategory, (subCategory) => subCategory.auctions, {
-    onDelete: 'SET NULL',
-  })
+  // TODO: Add onDelete
+  @ManyToMany(() => SubCategory, (subCategory) => subCategory.auctions)
   @JoinTable()
   subCategories: SubCategory[];
 }

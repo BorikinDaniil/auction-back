@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Param,
+  Query,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 
@@ -20,6 +21,7 @@ import { FilesService } from '../files/files.service';
 import { Files } from '../types/common';
 import { ApiTags } from '@nestjs/swagger';
 import { getResponse } from '../common/utils/response';
+import { AuctionParams } from '../types/requestsParams';
 
 @ApiTags('Auctions')
 @Controller('auctions')
@@ -31,13 +33,13 @@ export class AuctionController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    return res.status(200).json(await this.auctionService.findAll());
+  async findAll(@Query() query: AuctionParams, @Res() res: Response) {
+    return res.status(200).json(await this.auctionService.findAll(query));
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async getAuctionById(@Param('id') id: string, @Res() res: Response) {
+  async getAuctionById(@Param('id') id: number, @Res() res: Response) {
     const auction = await this.auctionService.findOne({ id });
 
     return getResponse(res, 200, auction);

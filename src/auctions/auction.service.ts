@@ -1,35 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Request } from 'express';
 
 import { Auction } from './auction.entity';
 import { UserService } from '../user/user.service';
-import { AuctionPayload } from '../types/common';
+import { AuctionPayload, AuctionStatus } from '../types/common';
 import { SubCategoriesService } from '../sub-categories/sub-categories.service';
 import { Cron } from '@nestjs/schedule';
 import { AuctionParams, AuctionRelations } from '../types/requestsParams';
 import {
   DEFAULT_AUCTION_PARAMS,
   DEFAULT_AUCTION_RELATIONS,
+  DEFAULT_AUCTION_SELECTION,
 } from '../common/constants';
 import { isBeforeOrEqual } from '../common/utils/date';
 
 const getCheckedAuction = (auctions: Auction[]): Auction[] => {
   return auctions.map((auction) => {
-    const { startAt, endAt, active } = auction;
-    if (!active) {
+    const { startAt, endAt, status } = auction;
+    if (status !== AuctionStatus.started) {
       return {
         ...auction,
-        active: isBeforeOrEqual(startAt),
+        status: isBeforeOrEqual(startAt)
+          ? AuctionStatus.started
+          : auction.status,
       };
     }
 
     if (isBeforeOrEqual(endAt)) {
       return {
         ...auction,
-        finished: true,
-        active: false,
+        status: AuctionStatus.finished,
       };
     }
 
@@ -46,12 +48,12 @@ export class AuctionService {
     private readonly subCategoriesService: SubCategoriesService,
   ) {}
 
-  @Cron('45 * * * * *', { name: 'auction' })
-  // @Cron('0 15 * * * *')
+  // @Cron('45 * * * * *', { name: 'auctions' })
+  @Cron('0 15 * * * *')
   async handleCron() {
     const notPastAuctions = await this.findAll({
       isDeleted: false,
-      finished: false,
+      status: Not(AuctionStatus.finished),
     });
 
     const checkedAuctions = getCheckedAuction(notPastAuctions);
@@ -78,23 +80,27 @@ export class AuctionService {
     return await this.auctionService.save(entity);
   }
 
-  findOne(where): Promise<Auction> {
+  findOne(
+    where: AuctionParams = DEFAULT_AUCTION_PARAMS,
+    relations: AuctionRelations = DEFAULT_AUCTION_RELATIONS,
+  ): Promise<Auction> {
     return this.auctionService.findOne({
-      where: {
-        ...where,
-        isDeleted: false,
-      },
-      relations: ['owner'],
+      where,
+      relations,
     });
   }
 
   findAll(
     where: AuctionParams = DEFAULT_AUCTION_PARAMS,
     relations: AuctionRelations = DEFAULT_AUCTION_RELATIONS,
+    select = DEFAULT_AUCTION_SELECTION,
   ): Promise<Auction[]> {
     return this.auctionService.find({
       where,
       relations,
+      select,
+      // With relations ids
+      // loadRelationIds: true,
     });
   }
 }

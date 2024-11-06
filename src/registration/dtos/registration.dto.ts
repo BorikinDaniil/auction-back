@@ -13,10 +13,6 @@ export class RegistrationDto {
   @Matches(EMAIL_REGEXP, { always: true, message: 'Invalid email' })
   email: string;
 
-  // @ApiProperty({ example: 1, description: 'User Gender' })
-  // @IsNumber()
-  // gender?: Gender;
-
   @ApiProperty({ example: 'Password1@', description: 'User Password' })
   @Length(6, 64, {
     message: 'Password must be between 6 and 64 characters long',

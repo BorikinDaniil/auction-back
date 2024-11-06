@@ -14,3 +14,9 @@ export enum Gender {
   male = 1,
   female,
 }
+
+export enum AuctionStatus {
+  awaiting = 1,
+  started,
+  finished,
+}
