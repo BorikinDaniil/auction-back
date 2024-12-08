@@ -15,7 +15,7 @@ export class AbstractEntity<T> {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: string;
 
-  @Column({ type: 'bool', default: false })
+  @Column({ type: 'bool', default: false, select: false })
   isDeleted: boolean;
 
   constructor(entity: Partial<T>) {

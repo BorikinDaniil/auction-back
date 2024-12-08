@@ -22,13 +22,13 @@ export class Auction extends AbstractEntity<Auction> {
   @IsString()
   productDescription: string;
 
-  @Column({ type: 'varchar', default: '0' })
+  @Column({ type: 'integer', default: 100 })
   @IsNumber()
-  startPrice: string;
+  startPrice: number;
 
-  @Column({ type: 'varchar', default: '0' })
+  @Column({ type: 'integer', default: 10 })
   @IsNumber()
-  step: string;
+  step: number;
 
   @Column({ type: 'timestamptz' })
   startAt: string;

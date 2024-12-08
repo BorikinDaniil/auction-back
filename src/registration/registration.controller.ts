@@ -6,9 +6,10 @@ import { UserService } from '../user/user.service';
 import { RegistrationDto } from './dtos/registration.dto';
 import { AuthService } from '../auth/auth.service';
 import { ValidationPipe } from '../pipes/validation.pipes';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { ProfilesService } from '../profiles/profiles.service';
 import { getErrorData, getResponse } from '../common/utils/response';
+import { ErrorDto } from '../common/dtos/error.dto';
 
 @ApiTags('Auth')
 @Controller('registration')
@@ -21,6 +22,11 @@ export class RegistrationController {
   ) {}
 
   @UsePipes(ValidationPipe)
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Invalid Credentials',
+    type: ErrorDto,
+  })
   @Post()
   async register(
     @Body() registrationDto: RegistrationDto,

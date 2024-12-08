@@ -1,7 +1,14 @@
-import { IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsString } from 'class-validator';
+import { SubCategory } from '../../sub-categories/sub-category.entity';
+import { User } from '../../user/user.entity';
+import {
+  OWNER_EXAMPLE,
+  subCategoryListExample,
+} from '../../common/entitiesExamples';
+import { AbstractDto } from '../../common/dtos/abstract.dto';
 
-export class AuctionDto {
+export class AuctionGetDto extends AbstractDto {
   @ApiProperty({ example: 'Awesome stuff', description: 'Product name' })
   @IsString()
   productName: string;
@@ -37,9 +44,15 @@ export class AuctionDto {
   endAt: string;
 
   @ApiProperty({
-    example: '[1, 2]',
+    example: subCategoryListExample,
     description: 'Categories',
   })
   @IsArray()
-  subCategories: number[];
+  subCategories: SubCategory[];
+
+  @ApiProperty({
+    example: OWNER_EXAMPLE,
+    description: 'Auction creator',
+  })
+  owner: User;
 }

@@ -10,6 +10,8 @@ import {
   UploadedFiles,
   Param,
   Query,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 
@@ -19,9 +21,11 @@ import { AuctionDto } from './dtos/auction.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../files/files.service';
 import { Files } from '../types/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { getResponse } from '../common/utils/response';
-import { AuctionParams } from '../types/requestsParams';
+import { AuctionGetDto } from './dtos/auction.get.dto';
+import { ErrorDto } from '../common/dtos/error.dto';
+import { AuctionQueryDto } from './dtos/auction.query.dto';
 
 @ApiTags('Auctions')
 @Controller('auctions')
@@ -32,13 +36,38 @@ export class AuctionController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    status: 200,
+    description: 'Get Auctions List',
+    type: [AuctionGetDto],
+  })
   @Get()
-  async findAll(@Query() query: AuctionParams, @Res() res: Response) {
-    return res.status(200).json(await this.auctionService.findAll(query));
+  async findAll(
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        transformOptions: { enableImplicitConversion: true },
+        forbidNonWhitelisted: true,
+      }),
+    )
+    query: AuctionQueryDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.auctionService.findAllWithLimitPrices(query);
+      return getResponse(res, 200, data);
+    } catch (e) {
+      getResponse(res, 500, e.message);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:id')
+  @ApiOkResponse({
+    status: 200,
+    description: 'Get Auction by id',
+    type: AuctionGetDto,
+  })
+  @Get(':id')
   async getAuctionById(@Param('id') id: number, @Res() res: Response) {
     const auction = await this.auctionService.findOne({ id });
 
@@ -46,6 +75,12 @@ export class AuctionController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Invalid Credentials',
+    type: ErrorDto,
+  })
+  @UsePipes(ValidationPipe)
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'image' }, { name: 'video' }]),
@@ -61,6 +96,8 @@ export class AuctionController {
 
     await this.auctionService.create(req, {
       ...createDto,
+      startPrice: +createDto.startPrice,
+      step: +createDto.step,
       image: imageName,
       video: videoName,
     });

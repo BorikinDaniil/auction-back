@@ -5,16 +5,25 @@ import { Request } from 'express';
 
 import { Auction } from './auction.entity';
 import { UserService } from '../user/user.service';
-import { AuctionPayload, AuctionStatus } from '../types/common';
+import {
+  AuctionPayload,
+  AuctionStatus,
+  AuctionsWithPagination,
+} from '../types/common';
 import { SubCategoriesService } from '../sub-categories/sub-categories.service';
 import { Cron } from '@nestjs/schedule';
-import { AuctionParams, AuctionRelations } from '../types/requestsParams';
+import {
+  AuctionsQueryParams,
+  AuctionRelations,
+  CommonParams,
+} from '../types/requestsParams';
 import {
   DEFAULT_AUCTION_PARAMS,
   DEFAULT_AUCTION_RELATIONS,
   DEFAULT_AUCTION_SELECTION,
 } from '../common/constants';
 import { isBeforeOrEqual } from '../common/utils/date';
+import { getParsedAuctionsQuery } from '../common/utils/parse-query';
 
 const getCheckedAuction = (auctions: Auction[]): Auction[] => {
   return auctions.map((auction) => {
@@ -81,7 +90,7 @@ export class AuctionService {
   }
 
   findOne(
-    where: AuctionParams = DEFAULT_AUCTION_PARAMS,
+    where: CommonParams = DEFAULT_AUCTION_PARAMS,
     relations: AuctionRelations = DEFAULT_AUCTION_RELATIONS,
   ): Promise<Auction> {
     return this.auctionService.findOne({
@@ -90,17 +99,84 @@ export class AuctionService {
     });
   }
 
-  findAll(
-    where: AuctionParams = DEFAULT_AUCTION_PARAMS,
+  async findAll(
+    where: AuctionsQueryParams = DEFAULT_AUCTION_PARAMS,
     relations: AuctionRelations = DEFAULT_AUCTION_RELATIONS,
     select = DEFAULT_AUCTION_SELECTION,
   ): Promise<Auction[]> {
+    const parsedWhere = getParsedAuctionsQuery(where);
+
     return this.auctionService.find({
-      where,
+      where: parsedWhere,
       relations,
       select,
       // With relations ids
       // loadRelationIds: true,
     });
+  }
+
+  async findAllWithPagination(
+    where: AuctionsQueryParams = DEFAULT_AUCTION_PARAMS,
+    relations: AuctionRelations = DEFAULT_AUCTION_RELATIONS,
+    select = DEFAULT_AUCTION_SELECTION,
+  ): Promise<AuctionsWithPagination> {
+    const parsedWhere = getParsedAuctionsQuery(where);
+    const { page, pageSize } = where;
+    const take = +pageSize || 10;
+    const skip = (+page - 1) * +pageSize || 0;
+
+    const [auctions, total] = await this.auctionService.findAndCount({
+      where: parsedWhere,
+      take,
+      skip,
+      relations,
+      select,
+    });
+
+    return {
+      auctions,
+      pagination: { total, page: +page, pageSize: take },
+    };
+  }
+
+  async findAllWithLimitPrices(
+    where: AuctionsQueryParams = DEFAULT_AUCTION_PARAMS,
+    relations: AuctionRelations = DEFAULT_AUCTION_RELATIONS,
+    select = DEFAULT_AUCTION_SELECTION,
+  ): Promise<{ auctionsData: AuctionsWithPagination; limitPrices: number[] }> {
+    const [auctionsData, limitPrices] = await Promise.all([
+      this.findAllWithPagination(where, relations, select),
+      this.getLimitPrices(),
+    ]);
+
+    return { auctionsData, limitPrices };
+  }
+
+  getLimitPrices(): Promise<number[]> {
+    return Promise.all([this.getMinPrice(), this.getMaxPrice()]);
+  }
+
+  async getMinPrice() {
+    const auction = await this.auctionService.find({
+      where: DEFAULT_AUCTION_PARAMS,
+      order: {
+        startPrice: 'ASC',
+      },
+      take: 1,
+    });
+
+    return auction[0]?.startPrice || 0;
+  }
+
+  async getMaxPrice() {
+    const auction = await this.auctionService.find({
+      where: DEFAULT_AUCTION_PARAMS,
+      order: {
+        startPrice: 'DESC',
+      },
+      take: 1,
+    });
+
+    return auction[0]?.startPrice || 0;
   }
 }
